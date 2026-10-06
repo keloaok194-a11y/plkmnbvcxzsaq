@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HACKING IN PROGRESS</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: black;
+      color: #00ff00;
+      font-family: "Courier New", monospace;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at center, rgba(0,255,0,0.1), transparent 50%),
+        #000;
+    }
+
+    .screen {
+      width: min(96vw, 1100px);
+      height: min(90vh, 700px);
+      border: 2px solid #00ff00;
+      background: rgba(0, 0, 0, 0.92);
+      box-shadow: 0 0 25px rgba(0,255,0,0.35), inset 0 0 20px rgba(0,255,0,0.08);
+      padding: 18px 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+      color: #7cff7c;
+      text-shadow: 0 0 10px rgba(0,255,0,0.7);
+      animation: flash 1s step-end infinite;
+    }
+
+    @keyframes flash {
+      50% { opacity: 0.5; }
+    }
+
+    .console {
+      height: calc(100% - 42px);
+      overflow: auto;
+      padding-right: 8px;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .console::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .console::-webkit-scrollbar-thumb {
+      background: #00ff00;
+      border-radius: 10px;
+    }
+
+    .line {
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 24px;
+      text-shadow: 0 0 5px rgba(0,255,0,0.6);
+    }
+
+    .prompt { color: #00ff00; font-weight: bold; }
+    .success { color: #7cff7c; }
+    .warn { color: #ffe066; }
+    .danger { color: #ff4d4d; }
+    .muted { color: #b5f7b5; }
+
+    .progress {
+      width: 100%;
+      height: 18px;
+      border: 1px solid #00ff00;
+      background: rgba(0,255,0,0.07);
+      margin: 8px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #00ff00, #66ff66);
+      box-shadow: 0 0 12px rgba(0,255,0,0.8);
+      animation: load 2.6s ease-in-out forwards;
+    }
+
+    @keyframes load {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 18px;
+      background: #00ff00;
+      vertical-align: middle;
+      margin-left: 6px;
+      animation: blink 0.8s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .floating-note {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      background: rgba(0,255,0,0.08);
+      border: 1px dashed rgba(0,255,0,0.7);
+      color: #9aff9a;
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,255,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div class="header">SYSTEM BREACH DETECTED</div>
+    <div class="console" id="console"></div>
+    <div class="floating-note">دحكت عليك يسطا 😂😂</div>
+  </div>
+
+  <script>
+    const consoleEl = document.getElementById('console');
+
+    function addLine(text, cls = '') {
+      const div = document.createElement('div');
+      div.className = 'line ' + cls;
+      div.textContent = text;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function progressBar() {
+      const wrap = document.createElement('div');
+      wrap.className = 'progress';
+      const fill = document.createElement('span');
+      wrap.appendChild(fill);
+      consoleEl.appendChild(wrap);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+      return wrap;
+    }
+
+    function typingText(text, cls = '', delay = 25) {
+      return new Promise((resolve) => {
+        let i = 0;
+        const line = document.createElement('div');
+        line.className = 'line ' + cls;
+        consoleEl.appendChild(line);
+
+        const tick = () => {
+          if (i < text.length) {
+            line.textContent = text.slice(0, i + 1);
+            i++;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            setTimeout(tick, delay);
+          } else {
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            line.appendChild(cursor);
+            resolve();
+          }
+        };
+
+        tick();
+      });
+    }
+
+    async function runSequence() {
+      await typingText('root@server:~$ whoami', 'prompt', 30);
+      await typingText('anonymous_hacker', 'success', 30);
+      await typingText('root@server:~$ sudo access_database.sh', 'prompt', 30);
+      await typingText('[*] Estabilishing encrypted tunnel...', 'warn', 20);
+      progressBar();
+      await new Promise(r => setTimeout(r, 2600));
+      await typingText('[+] Access granted to 5432 files', 'success', 20);
+      await typingText('root@server:~$ cat /etc/passwd', 'prompt', 30);
+      addLine('root:x:0:0:root:/root:/bin/bash', 'muted');
+      addLine('daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin', 'muted');
+      addLine('admin:x:1000:1000:Admin:/home/admin:/bin/bash', 'muted');
+      await typingText('[!] Firewall bypassing...', 'warn', 20);
+      progressBar();
+      await new Promise(r => setTimeout(r, 2600));
+      await typingText('[!!!] WARNING: unauthorized access detected', 'danger', 25);
+      await typingText('This is a prank only! 😂😂', 'success', 25);
+      await typingText('No real hacking happened. Just a fake terminal.', 'muted', 25);
+      await typingText('root@server:~$ echo "دحكت عليك يسطا"', 'prompt', 30);
+      await typingText('دحكت عليك يسطا 😂😂', 'success', 25);
+    }
+
+    runSequence();
+  </script>
+</body>
+</html>
